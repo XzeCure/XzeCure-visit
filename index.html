@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XzeCure - Patient Visit Form</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         :root {
@@ -141,9 +141,52 @@
                 max-width: 50%;
             }
         }
+        
+        /* New Styles for PIN entry screen */
+        .pin-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 2000;
+        }
+
+        .pin-card {
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .pin-input {
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <!-- PIN Entry Screen -->
+    <div class="pin-container" id="pinScreen">
+        <div class="card pin-card">
+            <h4 class="mb-3">Enter Secret PIN</h4>
+            <div class="mb-3">
+                <input type="password" class="form-control pin-input" id="pinInput" placeholder="●●●●●●" maxlength="6">
+            </div>
+            <button class="btn btn-primary" id="pinSubmitBtn">Unlock Form</button>
+            <div id="pinMessage" class="mt-3 text-danger"></div>
+        </div>
+    </div>
 
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner-border text-light" role="status">
@@ -151,7 +194,8 @@
         </div>
     </div>
 
-    <div class="container py-4">
+    <!-- Main Content (hidden by default) -->
+    <div class="container py-4 hidden" id="mainContent">
         <div class="d-flex align-items-center mb-4">
             <img src="https://i.imgur.com/Kz9Y6nB.png" alt="XzeCure Logo" width="50" class="me-3">
             <h1 class="h3 mb-0">XzeCure Patient Visit Form</h1>
@@ -259,6 +303,63 @@
                         <input type="file" class="form-control" id="letterheadUpload" accept="image/*">
                         <img id="letterhead-preview" src="https://i.imgur.com/8B1S8hD.png" alt="Letterhead Preview">
                     </div>
+                    
+                    <hr class="mt-5">
+                    <h5 class="mb-3"><i class="fas fa-inr"></i> Service Charges</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="serviceSelect" class="form-label"><i class="fas fa-hand-holding-medical"></i> Select Service</label>
+                            <select class="form-select" id="serviceSelect">
+                                <option value="" selected disabled>-- Select a Service --</option>
+                                <optgroup label="Doctor Services">
+                                    <option value="999">Doctor Home Visit (Daytime) - ₹999</option>
+                                    <option value="1499">Emergency / Night Visit - ₹1499</option>
+                                    <option value="499">Tele / Video Consultation - ₹499</option>
+                                </optgroup>
+                                <optgroup label="Nursing Services">
+                                    <option value="400">Nursing Visit (Injection / Dressing) - ₹400</option>
+                                    <option value="1200">12-hour Nursing Shift - ₹1200</option>
+                                    <option value="2200">24-hour Nursing Care - ₹2200</option>
+                                    <option value="1500">ICU-trained Nurse - ₹1500</option>
+                                </optgroup>
+                                <optgroup label="Attendant / Caregiver Services">
+                                    <option value="900">Daytime Attendant (12 hours) - ₹900</option>
+                                    <option value="1800">24-hour Attendant - ₹1800</option>
+                                </optgroup>
+                                <optgroup label="Physiotherapy">
+                                    <option value="400">One-time Physiotherapy Consultation - ₹400</option>
+                                    <option value="600">Follow-up Physiotherapy Session (avg) - ₹600</option>
+                                    <option value="4999">Package (10 sessions, avg) - ₹4999</option>
+                                </optgroup>
+                                <optgroup label="Other Medical Services">
+                                    <option value="99">Nebulisation at Home - ₹99</option>
+                                    <option value="199">ECG at Home - ₹199</option>
+                                    <option value="99">IV / Injection at Home - ₹99</option>
+                                    <option value="199">Wound Dressing - ₹199</option>
+                                    <option value="499">Catheter/Ryle's Tube Change (avg) - ₹499</option>
+                                    <option value="149">Blood Sample Collection at Home - ₹149</option>
+                                </optgroup>
+                                <optgroup label="Additional Services">
+                                    <option value="150">Medicine Delivery at Home - ₹150</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="visitChargeInput" class="form-label"><i class="fas fa-rupee-sign"></i> Visit Charge (₹)</label>
+                            <input type="number" class="form-control" id="visitChargeInput" placeholder="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                         <div class="col-md-6 mb-3">
+                            <label for="quantityInput" class="form-label"><i class="fas fa-list-ol"></i> Quantity</label>
+                            <input type="number" class="form-control" id="quantityInput" value="1" min="1">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="totalCharge" class="form-label"><i class="fas fa-dollar-sign"></i> Total Charges (₹)</label>
+                            <input type="text" class="form-control" id="totalCharge" value="₹0" readonly>
+                        </div>
+                    </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                         <button type="button" class="btn btn-secondary" id="previewBtn"><i class="fas fa-search-plus"></i> Preview PDF</button>
@@ -286,7 +387,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -312,7 +413,20 @@
             const pdfIframe = document.getElementById('pdf-iframe');
             const savedVisitsList = document.getElementById('savedVisits');
             const loadingOverlay = document.getElementById('loadingOverlay');
+
+            const serviceSelect = document.getElementById('serviceSelect');
+            const visitChargeInput = document.getElementById('visitChargeInput');
+            const quantityInput = document.getElementById('quantityInput');
+            const totalCharge = document.getElementById('totalCharge');
             
+            // New PIN related elements
+            const pinScreen = document.getElementById('pinScreen');
+            const pinInput = document.getElementById('pinInput');
+            const pinSubmitBtn = document.getElementById('pinSubmitBtn');
+            const pinMessage = document.getElementById('pinMessage');
+            const mainContent = document.getElementById('mainContent');
+            const SECRET_PIN = '472892';
+
             let generatedPdfBlob = null;
             let photoDataUrls = [];
             const defaultLetterheadUrl = "https://i.imgur.com/8B1S8hD.png";
@@ -320,7 +434,23 @@
             // Initial setup
             loadSavedVisits();
             
-            // Event Listeners
+            // Event Listeners for PIN Screen
+            pinSubmitBtn.addEventListener('click', () => {
+                if (pinInput.value === SECRET_PIN) {
+                    pinScreen.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                } else {
+                    pinMessage.textContent = 'Incorrect PIN. Please try again.';
+                }
+            });
+
+            pinInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    pinSubmitBtn.click();
+                }
+            });
+            
+            // Event Listeners for main form
             contactNumberInput.addEventListener('input', () => {
                 whatsappNumberInput.value = contactNumberInput.value;
             });
@@ -363,6 +493,26 @@
                     letterheadPreview.src = defaultLetterheadUrl;
                 }
             });
+            
+            serviceSelect.addEventListener('change', () => {
+                const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+                const price = parseFloat(selectedOption.value);
+                if (!isNaN(price)) {
+                    visitChargeInput.value = price;
+                }
+                updateTotalCharge();
+            });
+
+            visitChargeInput.addEventListener('input', updateTotalCharge);
+            quantityInput.addEventListener('input', updateTotalCharge);
+
+            function updateTotalCharge() {
+                const price = parseFloat(visitChargeInput.value) || 0;
+                const quantity = parseInt(quantityInput.value) || 1;
+                const total = price * quantity;
+                totalCharge.value = `₹${total.toFixed(2)}`;
+            }
+
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -415,10 +565,60 @@
                 if (generatedPdfBlob) {
                     const url = URL.createObjectURL(generatedPdfBlob);
                     navigator.clipboard.writeText(url).then(() => {
-                        alert('PDF link copied to clipboard! You can share this link with the patient (note: it will expire when you close the tab).');
+                        // alert('PDF link copied to clipboard! You can share this link with the patient (note: it will expire when you close the tab).');
+                        const copyMessage = document.createElement('div');
+                        copyMessage.textContent = 'PDF link copied to clipboard! The link will expire when you close this tab.';
+                        copyMessage.style.cssText = `
+                            position: fixed;
+                            bottom: 20px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background-color: #2ecc71;
+                            color: white;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            z-index: 1000;
+                            opacity: 0;
+                            transition: opacity 0.5s ease-in-out;
+                        `;
+                        document.body.appendChild(copyMessage);
+                        setTimeout(() => {
+                            copyMessage.style.opacity = 1;
+                        }, 100);
+                        setTimeout(() => {
+                            copyMessage.style.opacity = 0;
+                            setTimeout(() => {
+                                document.body.removeChild(copyMessage);
+                            }, 500);
+                        }, 3000);
                     }).catch(err => {
                         console.error('Failed to copy text: ', err);
-                        alert('Failed to copy link. Please try again.');
+                        // alert('Failed to copy link. Please try again.');
+                        const errorMessage = document.createElement('div');
+                        errorMessage.textContent = 'Failed to copy link. Please try again.';
+                        errorMessage.style.cssText = `
+                            position: fixed;
+                            bottom: 20px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background-color: #e74c3c;
+                            color: white;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            z-index: 1000;
+                            opacity: 0;
+                            transition: opacity 0.5s ease-in-out;
+                        `;
+                        document.body.appendChild(errorMessage);
+                        setTimeout(() => {
+                            errorMessage.style.opacity = 1;
+                        }, 100);
+                        setTimeout(() => {
+                            errorMessage.style.opacity = 0;
+                            setTimeout(() => {
+                                document.body.removeChild(errorMessage);
+                            }, 500);
+                        }, 3000);
                     });
                 }
             });
@@ -437,6 +637,8 @@
                 const date = new Date();
                 const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
                 const formattedTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const serviceCharge = totalCharge.value;
+                const serviceName = serviceSelect.options[serviceSelect.selectedIndex].text;
 
                 // Create a temporary element for PDF content
                 const pdfContentDiv = document.createElement('div');
@@ -485,9 +687,9 @@
                                 ${document.getElementById('duration').value ? `<li><b>Duration of Complaints:</b> ${document.getElementById('duration').value}</li>` : ''}
                                 ${document.getElementById('history').value ? `<li><b>Previous History:</b> ${document.getElementById('history').value}</li>` : ''}
                                 ${document.getElementById('vitals').value ? `<li><b>Current Vitals:</b> ${document.getElementById('vitals').value}</li>` : ''}
-                                ${document.getElementById('signs').value ? `<li><b>Signs/Symptoms:</b> ${document.getElementById('signs').value}</li>` : ''}
+                                ${document.getElementById('signs').value ? `<li><b>Specific Signs/Symptoms:</b> ${document.getElementById('signs').value}</li>` : ''}
                                 <li><b>Treatment Advised:</b> ${document.getElementById('treatment').value}</li>
-                                ${document.getElementById('investigations').value ? `<li><b>Investigations:</b> ${document.getElementById('investigations').value}</li>` : ''}
+                                ${document.getElementById('investigations').value ? `<li><b>Investigations Advised:</b> ${document.getElementById('investigations').value}</li>` : ''}
                             </ul>
                         </div>
 
@@ -495,6 +697,13 @@
                             <h4 style="color: white; font-size: 14pt;">Follow-up</h4>
                             <p style="margin: 0;"><b>Follow-up required?</b> ${document.querySelector('input[name="followup"]:checked').value}</p>
                             ${document.getElementById('followupDate').value ? `<p style="margin: 0;"><b>Suggested Date:</b> ${document.getElementById('followupDate').value}</p>` : ''}
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <h4 style="color: white; font-size: 14pt;">Service Charges</h4>
+                            <p style="margin: 0;"><b>Service Provided:</b> ${serviceName}</p>
+                            <p style="margin: 0;"><b>Quantity:</b> ${quantityInput.value}</p>
+                            <p style="margin: 0;"><b>Total Charges:</b> ${serviceCharge}</p>
                         </div>
                         
                         ${photoDataUrls.length > 0 ? `
@@ -548,14 +757,64 @@
                         visits.push(patientInfo);
                         localStorage.setItem('xzecure_visits', JSON.stringify(visits));
                         loadSavedVisits();
-                        alert('PDF generated and saved locally! You can now download or share it.');
+                        // alert('PDF generated and saved locally! You can now download or share it.');
+                        const successMessage = document.createElement('div');
+                        successMessage.textContent = 'PDF generated and saved locally! You can now download or share it.';
+                        successMessage.style.cssText = `
+                            position: fixed;
+                            bottom: 20px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background-color: #2ecc71;
+                            color: white;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            z-index: 1000;
+                            opacity: 0;
+                            transition: opacity 0.5s ease-in-out;
+                        `;
+                        document.body.appendChild(successMessage);
+                        setTimeout(() => {
+                            successMessage.style.opacity = 1;
+                        }, 100);
+                        setTimeout(() => {
+                            successMessage.style.opacity = 0;
+                            setTimeout(() => {
+                                document.body.removeChild(successMessage);
+                            }, 500);
+                        }, 3000);
                         pdfActionsCard.style.display = 'block';
                         document.getElementById('pdf-preview-container').style.display = 'none';
                     }
 
                 } catch (error) {
                     console.error('Error generating PDF:', error);
-                    alert('An error occurred while generating the PDF. Please try again.');
+                    // alert('An error occurred while generating the PDF. Please try again.');
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'An error occurred while generating the PDF. Please try again.';
+                    errorMessage.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background-color: #e74c3c;
+                        color: white;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        z-index: 1000;
+                        opacity: 0;
+                        transition: opacity 0.5s ease-in-out;
+                    `;
+                    document.body.appendChild(errorMessage);
+                    setTimeout(() => {
+                        errorMessage.style.opacity = 1;
+                    }, 100);
+                    setTimeout(() => {
+                        errorMessage.style.opacity = 0;
+                        setTimeout(() => {
+                            document.body.removeChild(errorMessage);
+                        }, 500);
+                    }, 3000);
                 } finally {
                     document.body.removeChild(pdfContentDiv);
                     loadingOverlay.style.display = 'none';
